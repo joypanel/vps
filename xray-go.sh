@@ -11,6 +11,23 @@ clear
 echo -e "${Info} XRAY CORE VPS AutoScript by Horasss"
 # Domain
 domain=$(cat /etc/v2ray/domain)
+mkdir -p /etc/trojan/
+touch /etc/trojan/akun.conf
+# install v2ray
+wget https://raw.githubusercontent.com/joypanel/vps/main/go.sh && chmod +x go.sh && ./go.sh
+rm -f /root/go.sh
+bash -c "$(wget -O- https://raw.githubusercontent.com/trojan-gfw/trojan-quickstart/master/trojan-quickstart.sh)"
+mkdir /root/.acme.sh
+sudo lsof -t -i tcp:80 -s tcp:listen | sudo xargs kill
+cd /root/
+wget -O acme.sh https://raw.githubusercontent.com/acmesh-official/acme.sh/master/acme.sh
+bash acme.sh --install
+rm acme.sh
+cd .acme.sh
+echo "starting...., Port 80 Akan di Hentikan Saat Proses install Cert"
+bash acme.sh --register-account -m kibocelcom@gmail.com
+bash acme.sh --issue --standalone -d $domain --force
+bash acme.sh --installcert -d $domain --fullchainpath /etc/v2ray/v2ray.crt --keypath /etc/v2ray/v2ray.key
 
 # Uuid Service
 uuid=$(cat /proc/sys/kernel/random/uuid)
